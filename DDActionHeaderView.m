@@ -25,6 +25,7 @@
 //  
 
 #import "DDActionHeaderView.h"
+#import "TexLegeTheme.h"
 
 @interface DDActionHeaderView ()
 @property(nonatomic, retain) UILabel *titleLabel;
@@ -69,10 +70,10 @@
 	self.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 	
 	titleLabel_ = [[UILabel alloc] initWithFrame:CGRectZero];
-	titleLabel_.font = [UIFont boldSystemFontOfSize:17.5f];
+	titleLabel_.font = [TexLegeTheme boldEighteen];
 	titleLabel_.numberOfLines = 0;        
 	titleLabel_.backgroundColor = [UIColor clearColor];
-	titleLabel_.textColor = [UIColor blackColor];
+	titleLabel_.textColor = [TexLegeTheme textDark];
 	titleLabel_.shadowColor = [UIColor whiteColor];
 	titleLabel_.shadowOffset = CGSizeMake(0.0f, 1.0f);
 	titleLabel_.hidden = NO;
@@ -95,19 +96,22 @@
 	
 	[self addSubview:actionPickerView_];
 	
+#if 0
+	// We're turning this off for now, we don't need the extended action menu, yet.
 	UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleActionPickerViewTap:)];
 	tapGesture.delegate = self;
 	[actionPickerView_ addGestureRecognizer:tapGesture];
 	[tapGesture release];
-		
+#endif		
 	borderGradientHidden_ = NO;	
+	
 }
 
 - (void)dealloc {
-    [titleLabel_ release];
-    [items_ release];
-    [actionPickerView_ release];
-    [actionPickerGradientLayer_ release];
+    nice_release(titleLabel_);
+    nice_release(items_);
+    nice_release(actionPickerView_);
+    nice_release(actionPickerGradientLayer_);
     
     [super dealloc];
 }
@@ -154,7 +158,8 @@
     [self drawLineInRect:CGRectMake(0.0f, 0.0f, rect.size.width, 0.0f) colors:line1];
     
     CGFloat line2[]={94.0f / 255.0f,  103.0f / 255.0f, 109.0f / 255.0f, 1.0f};
-    [self drawLineInRect:CGRectMake(0.0f, 64.5f, rect.size.width, 0.0f) colors:line2];        
+    [self drawLineInRect:CGRectMake(0.0f, 64.5f, rect.size.width, 0.0f) colors:line2];      
+	
 }
 
 #pragma mark Drawing private methods
