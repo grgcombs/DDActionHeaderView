@@ -1,7 +1,8 @@
 //
 //  DDActionHeaderView.h
-//  DDActionHeaderView (Released under MIT License)
+//  Heavily modified by Greg Combs
 //
+//  DDActionHeaderView (Released under MIT License)
 //  Created by digdog on 10/5/10.
 //  Copyright (c) 2010 Ching-Lan 'digdog' HUANG.
 //
@@ -25,24 +26,11 @@
 //  
 
 #import <UIKit/UIKit.h>
-#import <QuartzCore/QuartzCore.h>
-
-@interface DDActionHeaderView : UIView <UIGestureRecognizerDelegate> {
-@protected
-    BOOL borderGradientHidden_;
-    UILabel *titleLabel_;
-    NSArray *items_;
-    
-@private    
-    UIView *actionPickerView_;
-    CAGradientLayer *actionPickerGradientLayer_;
-}
-
-@property(nonatomic, assign, getter=isBorderGradientHidden) BOOL borderGradientHidden; // Default is NO. Set YES to hide transparent gradient below the bottom border.
+#import "TitleBarView.h"
+@interface DDActionHeaderView : TitleBarView <UIGestureRecognizerDelegate>
 @property(nonatomic, readonly) BOOL isActionPickerExpanded;
-@property(nonatomic, retain, readonly) UILabel *titleLabel; // Readonly, but you can change its properties freely.
-@property(nonatomic, copy) NSArray *items; // Array of UIView subclass instances, will be added into a (DDActionHeaderView's width - 20)px width and 50px height action picker.
-
+@property(nonatomic, copy) NSArray *items; 
+    // Array of UIView subclass instances, will be added into a (DDActionHeaderView's width - 20)px width and 50px height action picker.
 - (void)shrinkActionPicker; // Shrink action picker to its minimal size.
 @end
 
