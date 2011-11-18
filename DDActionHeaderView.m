@@ -46,7 +46,7 @@
 - (void)setup {	
     [super setup];
 	actionPickerView_ = [[UIView alloc] initWithFrame:CGRectZero];
-	actionPickerView_.layer.cornerRadius = 15; //25;
+	actionPickerView_.layer.cornerRadius = 15;
 	actionPickerView_.layer.borderWidth = 1.5;
 	actionPickerView_.layer.borderColor = [UIColor darkGrayColor].CGColor;
 	actionPickerView_.clipsToBounds = YES;
@@ -73,18 +73,24 @@
     [super dealloc];
 }
 
+static const CGFloat closedWidth = 60;
+static const CGFloat pickerHeight = 50;
+
 - (void)layoutSubviews {
-    self.titleLabel.frame = CGRectMake(12, 10, self.frame.size.width - kTitleBarHeight, 45);
-    self.actionPickerGradientLayer.bounds = CGRectMake(0, 0, self.frame.size.width - 20, 50);
+    const CGFloat offset = 10;
+    const CGFloat twoOffsets = offset * 2;
+    const CGFloat halfOffset = offset / 2;
+    self.titleLabel.frame = CGRectMake(offset, offset, self.frame.size.width - (closedWidth+twoOffsets), (pickerHeight - halfOffset));
+    self.actionPickerGradientLayer.bounds = CGRectMake(0, 0, self.frame.size.width, pickerHeight);
 	if (CGRectIsEmpty(self.actionPickerView.frame)) {
-		self.actionPickerView.frame = CGRectMake(self.frame.size.width - 70, 7, 60, 50);        		
+		self.actionPickerView.frame = CGRectMake(self.frame.size.width - (closedWidth+halfOffset), 7, closedWidth, pickerHeight);        		
 	} else {
 		__block __typeof__(self) blockSelf = self;
 		[UIView animateWithDuration:0.2 animations:^ {
             if (blockSelf.titleLabel.isHidden) {
-                blockSelf.actionPickerView.frame = CGRectMake(10, 7, blockSelf.frame.size.width - 20, 50);
+                blockSelf.actionPickerView.frame = CGRectMake(offset, 7, blockSelf.frame.size.width - (twoOffsets-halfOffset), pickerHeight);
             } else {
-                blockSelf.actionPickerView.frame = CGRectMake(blockSelf.frame.size.width - 70, 7, 60, 50);        
+                blockSelf.actionPickerView.frame = CGRectMake(blockSelf.frame.size.width - (closedWidth+halfOffset), 7, closedWidth, pickerHeight);        
             }
         }];		
 	}
@@ -96,7 +102,7 @@
 }
 
 - (BOOL)isActionPickerExpanded {
-	return (self.titleLabel.isHidden && self.actionPickerView.bounds.size.width != 60);
+	return (self.titleLabel.isHidden && self.actionPickerView.bounds.size.width != closedWidth);
 }
 
 - (void)setItems:(NSArray *)newItems {

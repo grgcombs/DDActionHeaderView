@@ -14,7 +14,11 @@
 
 @interface TitleBarView : UIView
 - (id)initWithFrame:(CGRect)frame title:(NSString *)title;
-@property(nonatomic, retain, readonly) UILabel *titleLabel; // Readonly, but you can change its properties freely.
+@property(nonatomic, retain) UILabel *titleLabel;
+@property(nonatomic, retain) NSArray *gradientColors;
+@property(nonatomic, retain) NSArray *borderShadowColors;
+@property(nonatomic, retain) UIColor *strokeTopColor;
+@property(nonatomic, retain) UIColor *strokeBottomColor;
 @property(nonatomic, assign) NSString *title;
 @property(nonatomic, readonly) CGFloat opticalHeight;
 @property(nonatomic, assign) BOOL useGradientBorder;
