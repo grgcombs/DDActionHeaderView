@@ -93,7 +93,7 @@ const CGFloat kGradientBorderHeight = 5;
     static UIColor *shadowBottom;
     if (!shadowBottom)
         shadowBottom = [[shadowTop colorWithAlphaComponent:0.1f] retain];
-    self.borderShadowColors = [NSArray arrayWithObjects:(id)gradientTop.CGColor, (id)gradientBottom.CGColor, nil];
+    self.borderShadowColors = [NSArray arrayWithObjects:(id)shadowTop.CGColor, (id)shadowBottom.CGColor, nil];
     
     self.strokeTopColor = DDColorWithRGBA(236, 239, 215, 1);
     self.strokeBottomColor = DDColorWithRGBA(100, 102, 92, 1);
