@@ -118,7 +118,7 @@ const CGFloat kGradientBorderHeight = 5;
 - (void)layoutSubviews {
     const CGFloat offsetX = 12;
     const CGFloat offsetY = 10;
-    CGFloat labelWidth = CGRectGetWidth(self.frame) - (2*offsetX);
+    CGFloat labelWidth = CGRectGetWidth(self.frame) - 55; //(2*offsetX);
     const CGFloat labelHeight = kTitleBarHeight - (2*offsetY) - kGradientBorderHeight;
     self.titleLabel.frame = CGRectMake(offsetX, offsetY, labelWidth, labelHeight);
 }
