@@ -16,12 +16,14 @@
 @interface TitleBarView()
 - (void)drawLinearGradientInRect:(CGRect)rect colors:(NSArray *)colors;
 - (void)drawLineInRect:(CGRect)rect color:(CGColorRef)strokeColor;
+@property(nonatomic, retain) NSArray *gradientColors;
+@property(nonatomic, retain) NSArray *borderShadowColors;
 @end
 
 UIColor *DDColorWithRGBA(int r, int g, int b, CGFloat a);
 
 const CGFloat kTitleBarHeight = 70;
-const CGFloat kGradientBorderHeight = 5;
+const CGFloat kDefaultGradientBorderHeight = 5;
 
 @implementation TitleBarView
 @synthesize useGradientBorder;
@@ -30,6 +32,11 @@ const CGFloat kGradientBorderHeight = 5;
 @synthesize borderShadowColors = _borderShadowColors;
 @synthesize strokeTopColor = _strokeTopColor;
 @synthesize strokeBottomColor = _strokeBottomColor;
+@synthesize titleColor = _titleColor;
+@synthesize titleFont = _titleFont;
+@synthesize borderShadowHeight = _borderShadowHeight;
+@dynamic gradientTopColor, gradientBottomColor;
+@dynamic borderShadowTopColor, borderShadowBottomColor;
 
 - (id)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:CGRectMake(frame.origin.x, frame.origin.y, frame.size.width, kTitleBarHeight)];
@@ -62,6 +69,7 @@ const CGFloat kGradientBorderHeight = 5;
 	_titleLabel.numberOfLines = 2;
     _titleLabel.adjustsFontSizeToFitWidth = YES;
 	_titleLabel.backgroundColor = [UIColor clearColor];
+    /*
     _titleLabel.shadowOffset = CGSizeMake(-1, 1);
     static UIColor *defaultTextColor;
     if (!defaultTextColor)
@@ -71,14 +79,10 @@ const CGFloat kGradientBorderHeight = 5;
     if (!defaultShadowColor)
         defaultShadowColor = [[[UIColor lightTextColor] colorWithAlphaComponent:0.7] retain];
     _titleLabel.shadowColor = defaultShadowColor;
-    static UIFont *defaultTextFont;
-    if (!defaultTextFont)
-        defaultTextFont = [[UIFont fontWithName:@"BlairMdITC TT" size:13.f] retain];
-    _titleLabel.font = defaultTextFont;
-//  _titleLabel.font = [UIFont boldSystemFontOfSize:16];
-
+*/
     [self addSubview:_titleLabel];
     
+    _borderShadowHeight = kDefaultGradientBorderHeight;
     static UIColor *gradientTop;
     if (!gradientTop)
         gradientTop = [DDColorWithRGBA(204, 206, 191, 1) retain];
@@ -93,7 +97,7 @@ const CGFloat kGradientBorderHeight = 5;
     static UIColor *shadowBottom;
     if (!shadowBottom)
         shadowBottom = [[shadowTop colorWithAlphaComponent:0.1f] retain];
-    self.borderShadowColors = [NSArray arrayWithObjects:(id)shadowTop.CGColor, (id)shadowBottom.CGColor, nil];
+    _borderShadowColors = [[NSArray alloc] initWithObjects:(id)shadowTop.CGColor, (id)shadowBottom.CGColor, nil];
     
     self.strokeTopColor = DDColorWithRGBA(236, 239, 215, 1);
     self.strokeBottomColor = DDColorWithRGBA(100, 102, 92, 1);
@@ -101,6 +105,8 @@ const CGFloat kGradientBorderHeight = 5;
 }
 
 - (void)dealloc {
+    self.titleColor = nil;
+    self.titleFont = nil;
     self.titleLabel = nil;
     self.borderShadowColors = nil;
     self.gradientColors = nil;
@@ -119,28 +125,38 @@ const CGFloat kGradientBorderHeight = 5;
     const CGFloat offsetX = 12;
     const CGFloat offsetY = 10;
     CGFloat labelWidth = CGRectGetWidth(self.frame) - 55; //(2*offsetX);
-    const CGFloat labelHeight = kTitleBarHeight - (2*offsetY) - kGradientBorderHeight;
+    const CGFloat labelHeight = kTitleBarHeight - (2*offsetY) - 5;
     self.titleLabel.frame = CGRectMake(offsetX, offsetY, labelWidth, labelHeight);
 }
 
 - (void)drawRect:(CGRect)rect {	
 	[self drawLinearGradientInRect:CGRectMake(0, 0, rect.size.width, self.opticalHeight - 1 ) colors:_gradientColors];
     if (useGradientBorder)
-        [self drawLinearGradientInRect:CGRectMake(0, self.opticalHeight, rect.size.width, kGradientBorderHeight) colors:_borderShadowColors];
+        [self drawLinearGradientInRect:CGRectMake(0, self.opticalHeight, rect.size.width, _borderShadowHeight) colors:_borderShadowColors];
     [self drawLineInRect:CGRectMake(0, 0, rect.size.width, 0) color:_strokeTopColor.CGColor];
     [self drawLineInRect:CGRectMake(0, self.opticalHeight - .5, rect.size.width, 0) color:_strokeBottomColor.CGColor];      
 }
 
 - (void)drawLinearGradientInRect:(CGRect)rect colors:(NSArray *)colors {
+    BOOL isConvex = NO;
 	CGContextRef context = UIGraphicsGetCurrentContext();
 	CGContextSaveGState(context);
 	CGColorSpaceRef rgb = CGColorSpaceCreateDeviceRGB();
     CGGradientRef gradient = CGGradientCreateWithColors(rgb, (CFArrayRef)colors, NULL);
 	CGColorSpaceRelease(rgb);
-	CGPoint start = CGPointMake(rect.origin.x, rect.origin.y + rect.size.height * 0.25);
-	CGPoint end = CGPointMake(rect.origin.x, rect.origin.y + rect.size.height * 0.75);
+    CGFloat yStart = 0;
+    CGFloat yEnd = rect.size.height;
+    if (isConvex) {
+        yStart = rect.size.height * 0.25;
+        yEnd = rect.size.height * 0.75;
+    }
+	CGPoint start = CGPointMake(rect.origin.x, rect.origin.y + yStart);
+	CGPoint end = CGPointMake(rect.origin.x, rect.origin.y + yEnd);
 	CGContextClipToRect(context, rect);
-	CGContextDrawLinearGradient(context, gradient, start, end, kCGGradientDrawsBeforeStartLocation | kCGGradientDrawsAfterEndLocation);
+    CGGradientDrawingOptions options = 0;
+    if (isConvex)
+        options = kCGGradientDrawsBeforeStartLocation | kCGGradientDrawsAfterEndLocation;
+	CGContextDrawLinearGradient(context, gradient, start, end, options);
 	CGGradientRelease(gradient);
 	CGContextRestoreGState(context);
 }
@@ -172,6 +188,81 @@ const CGFloat kGradientBorderHeight = 5;
 
 - (NSString *)title {
     return self.titleLabel.text;
+}
+
+- (void)setTitleColor:(UIColor *)titleColor {
+    self.titleLabel.textColor = titleColor;
+    [self.titleLabel setNeedsDisplay];
+    [self setNeedsDisplay];
+}
+
+- (UIColor *)titleColor {
+    return self.titleLabel.textColor;
+}
+
+- (void)setTitleFont:(UIFont *)titleFont {
+    self.titleLabel.font = titleFont;
+    [self.titleLabel setNeedsDisplay];
+    [self setNeedsDisplay];
+}
+
+- (UIFont *)titleFont {
+    return self.titleLabel.font;
+}
+
+#pragma UIAppearance accessors
+
+- (void)setColor:(UIColor *)color forCollectionKey:(NSString *)propertyKey index:(NSInteger)index {
+    NSArray *collection = [self valueForKey:propertyKey];
+    NSMutableArray *colors = [NSMutableArray arrayWithArray:collection];
+    [colors replaceObjectAtIndex:index withObject:(id)color.CGColor];
+    [self setValue:colors forKey:propertyKey];
+}
+
+- (UIColor *)colorForCollectionKey:(NSString *)propertyKey index:(NSInteger)index {
+    NSArray *collection = [self valueForKey:propertyKey];
+    UIColor *color = [UIColor colorWithCGColor:(CGColorRef)[collection objectAtIndex:index]];
+    return color;
+}
+
+- (UIColor *)gradientTopColor {
+    return [self colorForCollectionKey:@"gradientColors" index:0];
+}
+
+- (void)setGradientTopColor:(UIColor *)gradientTopColor {
+    [self setColor:gradientTopColor forCollectionKey:@"gradientColors" index:0];
+}
+
+- (UIColor *)gradientBottomColor {
+    return [self colorForCollectionKey:@"gradientColors" index:1];
+}
+
+- (void)setGradientBottomColor:(UIColor *)gradientBottomColor {
+    [self setColor:gradientBottomColor forCollectionKey:@"gradientColors" index:1];
+}
+
+- (UIColor *)borderShadowTopColor {
+    return [self colorForCollectionKey:@"borderShadowColors" index:0];
+}
+
+- (void)setBorderShadowTopColor:(UIColor *)borderShadowTopColor {
+    [self setColor:borderShadowTopColor forCollectionKey:@"borderShadowColors" index:0];
+}
+
+- (UIColor *)borderShadowBottomColor {
+    return [self colorForCollectionKey:@"borderShadowColors" index:1];
+}
+
+- (void)setBorderShadowBottomColor:(UIColor *)borderShadowBottomColor {
+    [self setColor:borderShadowBottomColor forCollectionKey:@"borderShadowColors" index:1];
+}
+
+- (void)setBorderShadowHeight:(CGFloat)borderShadowHeight {
+    _borderShadowHeight = borderShadowHeight;
+}
+
+- (CGFloat)borderShadowHeight {
+    return _borderShadowHeight;
 }
 
 @end

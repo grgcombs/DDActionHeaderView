@@ -12,16 +12,21 @@
 
 #import <UIKit/UIKit.h>
 
-@interface TitleBarView : UIView
+@interface TitleBarView : UIView <UIAppearance>
 - (id)initWithFrame:(CGRect)frame title:(NSString *)title;
 @property(nonatomic, retain) UILabel *titleLabel;
-@property(nonatomic, retain) NSArray *gradientColors;
-@property(nonatomic, retain) NSArray *borderShadowColors;
-@property(nonatomic, retain) UIColor *strokeTopColor;
-@property(nonatomic, retain) UIColor *strokeBottomColor;
 @property(nonatomic, assign) NSString *title;
 @property(nonatomic, readonly) CGFloat opticalHeight;
 @property(nonatomic, assign) BOOL useGradientBorder;
+@property(nonatomic, assign) UIFont *titleFont UI_APPEARANCE_SELECTOR;
+@property(nonatomic, assign) UIColor *titleColor UI_APPEARANCE_SELECTOR;
+@property(nonatomic, retain) UIColor *gradientTopColor UI_APPEARANCE_SELECTOR;
+@property(nonatomic, retain) UIColor *gradientBottomColor UI_APPEARANCE_SELECTOR;
+@property(nonatomic, assign) CGFloat borderShadowHeight UI_APPEARANCE_SELECTOR;
+@property(nonatomic, retain) UIColor *borderShadowTopColor UI_APPEARANCE_SELECTOR;
+@property(nonatomic, retain) UIColor *borderShadowBottomColor UI_APPEARANCE_SELECTOR;
+@property(nonatomic, retain) UIColor *strokeTopColor UI_APPEARANCE_SELECTOR;
+@property(nonatomic, retain) UIColor *strokeBottomColor UI_APPEARANCE_SELECTOR;
 - (void)setup; // used for overriding subclasses
 @end
 
