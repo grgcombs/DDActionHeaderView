@@ -69,17 +69,6 @@ const CGFloat kDefaultGradientBorderHeight = 5;
 	_titleLabel.numberOfLines = 2;
     _titleLabel.adjustsFontSizeToFitWidth = YES;
 	_titleLabel.backgroundColor = [UIColor clearColor];
-    /*
-    _titleLabel.shadowOffset = CGSizeMake(-1, 1);
-    static UIColor *defaultTextColor;
-    if (!defaultTextColor)
-        defaultTextColor = [[[UIColor darkTextColor] colorWithAlphaComponent:0.9] retain];
-    _titleLabel.textColor =  defaultTextColor;
-    static UIColor *defaultShadowColor;
-    if (!defaultShadowColor)
-        defaultShadowColor = [[[UIColor lightTextColor] colorWithAlphaComponent:0.7] retain];
-    _titleLabel.shadowColor = defaultShadowColor;
-*/
     [self addSubview:_titleLabel];
     
     _borderShadowHeight = kDefaultGradientBorderHeight;
@@ -99,8 +88,10 @@ const CGFloat kDefaultGradientBorderHeight = 5;
         shadowBottom = [[shadowTop colorWithAlphaComponent:0.1f] retain];
     _borderShadowColors = [[NSArray alloc] initWithObjects:(id)shadowTop.CGColor, (id)shadowBottom.CGColor, nil];
     
-    self.strokeTopColor = DDColorWithRGBA(236, 239, 215, 1);
-    self.strokeBottomColor = DDColorWithRGBA(100, 102, 92, 1);
+    if (!_strokeTopColor)
+        _strokeTopColor = [DDColorWithRGBA(236, 239, 215, 1) retain];
+    if (!_strokeBottomColor)
+        _strokeBottomColor = [DDColorWithRGBA(100, 102, 92, 1) retain];
 
 }
 
@@ -124,7 +115,7 @@ const CGFloat kDefaultGradientBorderHeight = 5;
 - (void)layoutSubviews {
     const CGFloat offsetX = 12;
     const CGFloat offsetY = 10;
-    CGFloat labelWidth = CGRectGetWidth(self.frame) - 55; //(2*offsetX);
+    CGFloat labelWidth = CGRectGetWidth(self.frame) - 55;
     const CGFloat labelHeight = kTitleBarHeight - (2*offsetY) - 5;
     self.titleLabel.frame = CGRectMake(offsetX, offsetY, labelWidth, labelHeight);
 }
@@ -221,8 +212,7 @@ const CGFloat kDefaultGradientBorderHeight = 5;
 
 - (UIColor *)colorForCollectionKey:(NSString *)propertyKey index:(NSInteger)index {
     NSArray *collection = [self valueForKey:propertyKey];
-    UIColor *color = [UIColor colorWithCGColor:(CGColorRef)[collection objectAtIndex:index]];
-    return color;
+    return [UIColor colorWithCGColor:(CGColorRef)[collection objectAtIndex:index]];
 }
 
 - (UIColor *)gradientTopColor {
@@ -259,12 +249,28 @@ const CGFloat kDefaultGradientBorderHeight = 5;
 
 - (void)setBorderShadowHeight:(CGFloat)borderShadowHeight {
     _borderShadowHeight = borderShadowHeight;
+    [self setNeedsDisplay];
 }
 
 - (CGFloat)borderShadowHeight {
     return _borderShadowHeight;
 }
 
+- (void)setStrokeTopColor:(UIColor *)strokeTopColor {
+    SLFRelease(_strokeTopColor);
+    _strokeTopColor = [strokeTopColor retain];
+    if (strokeTopColor) {
+        [self setNeedsDisplay];
+    }
+}
+
+- (void)setStrokeBottomColor:(UIColor *)strokeBottomColor {
+    SLFRelease(_strokeBottomColor);
+    _strokeBottomColor = [strokeBottomColor retain];
+    if (strokeBottomColor) {
+        [self setNeedsDisplay];
+    }
+}
 @end
 
 UIColor *DDColorWithRGBA(int r, int g, int b, CGFloat a) {
