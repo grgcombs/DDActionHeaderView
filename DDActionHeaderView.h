@@ -1,8 +1,7 @@
 //
 //  DDActionHeaderView.h
-//  Heavily modified by Greg Combs
-//
 //  DDActionHeaderView (Released under MIT License)
+//
 //  Created by digdog on 10/5/10.
 //  Copyright (c) 2010 Ching-Lan 'digdog' HUANG.
 //
@@ -26,11 +25,10 @@
 //  
 
 #import <UIKit/UIKit.h>
-#import "TitleBarView.h"
-@interface DDActionHeaderView : TitleBarView <UIGestureRecognizerDelegate>
-@property(nonatomic, readonly) BOOL isActionPickerExpanded;
-@property(nonatomic, copy) NSArray *items; 
-    // Array of UIView subclass instances, will be added into a (DDActionHeaderView's width - 20)px width and 50px height action picker.
-- (void)shrinkActionPicker; // Shrink action picker to its minimal size.
+#import <QuartzCore/QuartzCore.h>
+
+@interface DDActionHeaderView : UIView
+@property(nonatomic, retain, readonly) UILabel *titleLabel; // Readonly, but you can change its properties freely.
+@property(nonatomic, copy) NSArray *items; // Array of UIView subclass instances, will be added into a (DDActionHeaderView's width - 20)px width and 50px height action picker.
 @end
 
