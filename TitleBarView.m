@@ -16,8 +16,8 @@
 @interface TitleBarView()
 - (void)drawLinearGradientInRect:(CGRect)rect colors:(NSArray *)colors;
 - (void)drawLineInRect:(CGRect)rect color:(CGColorRef)strokeColor;
-@property(nonatomic, retain) NSArray *gradientColors;
-@property(nonatomic, retain) NSArray *borderShadowColors;
+@property(nonatomic, strong) NSArray *gradientColors;
+@property(nonatomic, strong) NSArray *borderShadowColors;
 @end
 
 UIColor *DDColorWithRGBA(int r, int g, int b, CGFloat a);
@@ -74,34 +74,30 @@ const CGFloat kDefaultGradientBorderHeight = 5;
     _borderShadowHeight = kDefaultGradientBorderHeight;
     static UIColor *gradientTop;
     if (!gradientTop)
-        gradientTop = [DDColorWithRGBA(204, 206, 191, 1) retain];
+        gradientTop = DDColorWithRGBA(204, 206, 191, 1);
     static UIColor *gradientBottom;
     if (!gradientBottom)
-        gradientBottom = [DDColorWithRGBA(162, 165, 148, 1) retain];
+        gradientBottom = DDColorWithRGBA(162, 165, 148, 1);
     self.gradientColors = [NSArray arrayWithObjects:(id)gradientTop.CGColor, (id)gradientBottom.CGColor, nil];
 
     static UIColor *shadowTop;
     if (!shadowTop)
-        shadowTop = [DDColorWithRGBA(79, 80, 72, 0.5f) retain];
+        shadowTop = DDColorWithRGBA(79, 80, 72, 0.5f);
     static UIColor *shadowBottom;
     if (!shadowBottom)
-        shadowBottom = [[shadowTop colorWithAlphaComponent:0.1f] retain];
+        shadowBottom = [shadowTop colorWithAlphaComponent:0.1f];
     _borderShadowColors = [[NSArray alloc] initWithObjects:(id)shadowTop.CGColor, (id)shadowBottom.CGColor, nil];
     
     if (!_strokeTopColor)
-        _strokeTopColor = [DDColorWithRGBA(236, 239, 215, 1) retain];
+        _strokeTopColor = DDColorWithRGBA(236, 239, 215, 1);
     if (!_strokeBottomColor)
-        _strokeBottomColor = [DDColorWithRGBA(100, 102, 92, 1) retain];
+        _strokeBottomColor = DDColorWithRGBA(100, 102, 92, 1);
 
 }
 
 - (void)dealloc {
-    self.titleLabel = nil;
-    self.borderShadowColors = nil;
-    self.gradientColors = nil;
     self.strokeTopColor = nil;
     self.strokeBottomColor = nil;
-    [super dealloc];
 }
 
 - (CGFloat)opticalHeight {
@@ -256,7 +252,7 @@ const CGFloat kDefaultGradientBorderHeight = 5;
 
 - (void)setStrokeTopColor:(UIColor *)strokeTopColor {
     SLFRelease(_strokeTopColor);
-    _strokeTopColor = [strokeTopColor retain];
+    _strokeTopColor = strokeTopColor;
     if (strokeTopColor) {
         [self setNeedsDisplay];
     }
@@ -264,7 +260,7 @@ const CGFloat kDefaultGradientBorderHeight = 5;
 
 - (void)setStrokeBottomColor:(UIColor *)strokeBottomColor {
     SLFRelease(_strokeBottomColor);
-    _strokeBottomColor = [strokeBottomColor retain];
+    _strokeBottomColor = strokeBottomColor;
     if (strokeBottomColor) {
         [self setNeedsDisplay];
     }

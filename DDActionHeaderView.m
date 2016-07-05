@@ -29,8 +29,8 @@
 #import <QuartzCore/QuartzCore.h>
 
 @interface DDActionHeaderView ()
-@property(nonatomic, retain) UIView *actionPickerView;
-@property(nonatomic, retain) CAGradientLayer *actionPickerGradientLayer;
+@property(nonatomic, strong) UIView *actionPickerView;
+@property(nonatomic, strong) CAGradientLayer *actionPickerGradientLayer;
 - (void)handleActionPickerViewTap:(UIGestureRecognizer *)gestureRecognizer;
 @end
 
@@ -51,7 +51,7 @@
 	actionPickerView_.layer.borderColor = [UIColor darkGrayColor].CGColor;
 	actionPickerView_.clipsToBounds = YES;
 	
-	actionPickerGradientLayer_ = [[CAGradientLayer layer] retain];
+	actionPickerGradientLayer_ = [CAGradientLayer layer];
 	actionPickerGradientLayer_.anchorPoint = CGPointZero;
 	actionPickerGradientLayer_.position = CGPointZero;
 	actionPickerGradientLayer_.startPoint = CGPointZero;
@@ -63,15 +63,8 @@
 	UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleActionPickerViewTap:)];
 	tapGesture.delegate = self;
 	[actionPickerView_ addGestureRecognizer:tapGesture];
-	[tapGesture release];	
 }
 
-- (void)dealloc {
-    self.items = nil;
-    self.actionPickerView = nil;
-    self.actionPickerGradientLayer = nil;
-    [super dealloc];
-}
 
 static const CGFloat closedWidth = 60;
 static const CGFloat pickerHeight = 50;
@@ -112,7 +105,6 @@ static const CGFloat pickerHeight = 50;
         [subview removeFromSuperview];
     }
     
-    [items_ release];
     items_ = [newItems copy];
     
     for (id item in items_) {
