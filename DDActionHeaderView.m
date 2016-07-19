@@ -36,55 +36,66 @@
 
 @implementation DDActionHeaderView
 
-@synthesize items = items_;
-@synthesize actionPickerView = actionPickerView_;
-@synthesize actionPickerGradientLayer = actionPickerGradientLayer_;
-
 #pragma mark -
 #pragma mark View lifecycle
 
-- (void)setup {	
+- (void)setup
+{
     [super setup];
-	actionPickerView_ = [[UIView alloc] initWithFrame:CGRectZero];
-	actionPickerView_.layer.cornerRadius = 15;
-	actionPickerView_.layer.borderWidth = 1.5;
-	actionPickerView_.layer.borderColor = [UIColor darkGrayColor].CGColor;
-	actionPickerView_.clipsToBounds = YES;
+	_actionPickerView = [[UIView alloc] initWithFrame:CGRectZero];
+	_actionPickerView.layer.cornerRadius = 15;
+	_actionPickerView.layer.borderWidth = 1.5;
+	_actionPickerView.layer.borderColor = [UIColor darkGrayColor].CGColor;
+	_actionPickerView.clipsToBounds = YES;
 	
-	actionPickerGradientLayer_ = [CAGradientLayer layer];
-	actionPickerGradientLayer_.anchorPoint = CGPointZero;
-	actionPickerGradientLayer_.position = CGPointZero;
-	actionPickerGradientLayer_.startPoint = CGPointZero;
-	actionPickerGradientLayer_.endPoint = CGPointMake(0, 1);
-	actionPickerGradientLayer_.colors = [NSArray arrayWithObjects:(id)[UIColor grayColor].CGColor, (id)[UIColor darkGrayColor].CGColor, nil];
-	[actionPickerView_.layer addSublayer:actionPickerGradientLayer_];
-	[self addSubview:actionPickerView_];
+	_actionPickerGradientLayer = [CAGradientLayer layer];
+	_actionPickerGradientLayer.anchorPoint = CGPointZero;
+	_actionPickerGradientLayer.position = CGPointZero;
+	_actionPickerGradientLayer.startPoint = CGPointZero;
+	_actionPickerGradientLayer.endPoint = CGPointMake(0, 1);
+	_actionPickerGradientLayer.colors = @[(id)[UIColor grayColor].CGColor, (id)[UIColor darkGrayColor].CGColor];
+	[_actionPickerView.layer addSublayer:_actionPickerGradientLayer];
+	[self addSubview:_actionPickerView];
 	
 	UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleActionPickerViewTap:)];
 	tapGesture.delegate = self;
-	[actionPickerView_ addGestureRecognizer:tapGesture];
+	[_actionPickerView addGestureRecognizer:tapGesture];
 }
 
 
-static const CGFloat closedWidth = 60;
-static const CGFloat pickerHeight = 50;
+static const CGFloat DDActionHeaderClosedWidth = 60;
+static const CGFloat DDActionHeaderPickerHeight = 50;
 
 - (void)layoutSubviews {
     const CGFloat offset = 10;
     const CGFloat twoOffsets = offset * 2;
     const CGFloat halfOffset = offset / 2;
-    self.titleLabel.frame = CGRectMake(offset, offset, self.frame.size.width - (closedWidth+twoOffsets), (pickerHeight - halfOffset));
-    self.actionPickerGradientLayer.bounds = CGRectMake(0, 0, self.frame.size.width, pickerHeight);
-	if (CGRectIsEmpty(self.actionPickerView.frame)) {
-		self.actionPickerView.frame = CGRectMake(self.frame.size.width - (closedWidth+halfOffset), 7, closedWidth, pickerHeight);        		
-	} else {
-		__block __typeof__(self) blockSelf = self;
+
+    CGFloat closedWidth = DDActionHeaderClosedWidth;
+    CGFloat pickerHeight = DDActionHeaderPickerHeight;
+    CGFloat width = CGRectGetWidth(self.frame);
+
+    self.titleLabel.frame = CGRectMake(offset, offset, width - (closedWidth+twoOffsets), (pickerHeight - halfOffset));
+    self.actionPickerGradientLayer.bounds = CGRectMake(0, 0, width, pickerHeight);
+
+	if (CGRectIsEmpty(self.actionPickerView.frame))
+    {
+		self.actionPickerView.frame = CGRectMake(width - (closedWidth+halfOffset), 7, closedWidth, pickerHeight);
+	}
+    else
+    {
+        __weak __typeof__(self) wSelf = self;
 		[UIView animateWithDuration:0.2 animations:^ {
-            if (blockSelf.titleLabel.isHidden) {
-                blockSelf.actionPickerView.frame = CGRectMake(offset, 7, blockSelf.frame.size.width - (twoOffsets-halfOffset), pickerHeight);
-            } else {
-                blockSelf.actionPickerView.frame = CGRectMake(blockSelf.frame.size.width - (closedWidth+halfOffset), 7, closedWidth, pickerHeight);        
-            }
+            __strong __typeof__(wSelf) sSelf = wSelf;
+
+            CGFloat width = CGRectGetWidth(sSelf.frame);
+            CGFloat closedWidth = DDActionHeaderClosedWidth;
+            CGFloat pickerHeight = DDActionHeaderPickerHeight;
+
+            if (sSelf.titleLabel.isHidden)
+                sSelf.actionPickerView.frame = CGRectMake(offset, 7, width - (twoOffsets-halfOffset), pickerHeight);
+            else
+                sSelf.actionPickerView.frame = CGRectMake(width - (closedWidth + halfOffset), 7, closedWidth, pickerHeight);
         }];		
 	}
 }
@@ -95,19 +106,19 @@ static const CGFloat pickerHeight = 50;
 }
 
 - (BOOL)isActionPickerExpanded {
-	return (self.titleLabel.isHidden && self.actionPickerView.bounds.size.width != closedWidth);
+	return (self.titleLabel.isHidden && self.actionPickerView.bounds.size.width != DDActionHeaderClosedWidth);
 }
 
 - (void)setItems:(NSArray *)newItems {
-    if (items_ == newItems)
+    if (_items == newItems)
         return;
     for (UIView *subview in self.actionPickerView.subviews) {
         [subview removeFromSuperview];
     }
     
-    items_ = [newItems copy];
+    _items = [newItems copy];
     
-    for (id item in items_) {
+    for (id item in _items) {
         if ([item isKindOfClass:[UIView class]]) {
             [self.actionPickerView addSubview:item];
         }
