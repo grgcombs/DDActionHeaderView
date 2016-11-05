@@ -28,7 +28,7 @@
 #import <QuartzCore/QuartzCore.h>
 
 @interface DDActionHeaderView : UIView
-@property(nonatomic, retain, readonly) UILabel *titleLabel; // Readonly, but you can change its properties freely.
+@property(nonatomic, strong, readonly) UILabel *titleLabel; // Readonly, but you can change its properties freely.
 @property(nonatomic, copy) NSArray *items; // Array of UIView subclass instances, will be added into a (DDActionHeaderView's width - 20)px width and 50px height action picker.
 @end
 

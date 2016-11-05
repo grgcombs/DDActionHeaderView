@@ -28,8 +28,8 @@
 #import "TexLegeTheme.h"
 
 @interface DDActionHeaderView ()
-@property(nonatomic, retain) UILabel *titleLabel;
-@property(nonatomic, retain) UIView *actionPickerView;
+@property(nonatomic, strong) UILabel *titleLabel;
+@property(nonatomic, strong) UIView *actionPickerView;
 @end
 
 @implementation DDActionHeaderView
@@ -77,10 +77,7 @@
 }
 
 - (void)dealloc {
-    nice_release(_titleLabel);
-    nice_release(_items);
-    nice_release(_actionPickerView);
-    [super dealloc];
+    self.items = nil;
 }
 
 #pragma mark Layout & Redraw
@@ -101,7 +98,6 @@
             [subview removeFromSuperview];
         }
         
-        [_items release];
         _items = [newItems copy];
         
         for (id item in _items) {
